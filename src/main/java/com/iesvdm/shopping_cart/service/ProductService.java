@@ -9,13 +9,14 @@ import org.springframework.transaction.annotation.Transactional;
 import com.iesvdm.shopping_cart.model.Product;
 import com.iesvdm.shopping_cart.repository.ProductRepository;
 
-import lombok.RequiredArgsConstructor;
-
 @Service
-@RequiredArgsConstructor
 public class ProductService {
 
     private final ProductRepository productRepository;
+
+    public ProductService(ProductRepository productRepository) {
+        this.productRepository = productRepository;
+    }
 
     public List<Product> findAll() {
         return productRepository.findAll();

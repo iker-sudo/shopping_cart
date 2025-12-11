@@ -11,13 +11,14 @@ import org.springframework.stereotype.Repository;
 
 import com.iesvdm.shopping_cart.model.CustomerOrder;
 
-import lombok.RequiredArgsConstructor;
-
 @Repository
-@RequiredArgsConstructor
 public class OrderRepository {
 
     private final JdbcTemplate jdbcTemplate;
+
+    public OrderRepository(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     private SimpleJdbcInsert simpleJdbcInsert() {
         return new SimpleJdbcInsert(jdbcTemplate)

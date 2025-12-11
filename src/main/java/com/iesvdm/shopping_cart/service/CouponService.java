@@ -10,13 +10,14 @@ import org.springframework.stereotype.Service;
 import com.iesvdm.shopping_cart.model.Coupon;
 import com.iesvdm.shopping_cart.repository.CouponRepository;
 
-import lombok.RequiredArgsConstructor;
-
 @Service
-@RequiredArgsConstructor
 public class CouponService {
 
     private final CouponRepository couponRepository;
+
+    public CouponService(CouponRepository couponRepository) {
+        this.couponRepository = couponRepository;
+    }
 
     /**
      * Busca un cupón válido por su código.

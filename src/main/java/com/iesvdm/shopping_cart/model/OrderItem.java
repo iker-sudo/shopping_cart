@@ -2,15 +2,6 @@ package com.iesvdm.shopping_cart.model;
 
 import java.math.BigDecimal;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class OrderItem {
     
     private Long id;
@@ -26,4 +17,73 @@ public class OrderItem {
     private BigDecimal lineTotal;
     
     private Integer productId;
+
+    public OrderItem() {
+    }
+
+    public OrderItem(Long id, Long orderId, String productName, BigDecimal unitPrice, Integer quantity, BigDecimal lineTotal, Integer productId) {
+        this.id = id;
+        this.orderId = orderId;
+        this.productName = productName;
+        this.unitPrice = unitPrice;
+        this.quantity = quantity;
+        this.lineTotal = lineTotal;
+        this.productId = productId;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(Long orderId) {
+        this.orderId = orderId;
+    }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
+    public BigDecimal getUnitPrice() {
+        return unitPrice;
+    }
+
+    public void setUnitPrice(BigDecimal unitPrice) {
+        this.unitPrice = unitPrice;
+    }
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
+
+    public BigDecimal getLineTotal() {
+        return lineTotal;
+    }
+
+    public void setLineTotal(BigDecimal lineTotal) {
+        this.lineTotal = lineTotal;
+    }
+
+    public Integer getProductId() {
+        return productId;
+    }
+
+    public void setProductId(Integer productId) {
+        this.productId = productId;
+    }
 }

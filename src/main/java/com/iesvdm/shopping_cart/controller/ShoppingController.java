@@ -25,17 +25,20 @@ import com.iesvdm.shopping_cart.model.OrderItem;
 import com.iesvdm.shopping_cart.service.CouponService;
 import com.iesvdm.shopping_cart.service.OrderService;
 
-import lombok.RequiredArgsConstructor;
-
 @Controller
 @RequestMapping("/cart")
 @SessionAttributes("cart")
-@RequiredArgsConstructor
 public class ShoppingController {
 
     private final OrderService orderService;
     private final CouponService couponService;
     private final JdbcTemplate jdbcTemplate;
+
+    public ShoppingController(OrderService orderService, CouponService couponService, JdbcTemplate jdbcTemplate) {
+        this.orderService = orderService;
+        this.couponService = couponService;
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     @ModelAttribute("cart")
     public List<OrderItem> cart() {
@@ -146,31 +149,30 @@ public class ShoppingController {
 
         // Crear la orden con número de orden temporal y datos del formulario
         LocalDateTime now = LocalDateTime.now();
-        CustomerOrder order = CustomerOrder.builder()
-                .orderNumber("TEMP")
-                .status("NEW")
-                .grossTotal(grossTotal)
-                .discountTotal(discountTotal)
-                .finalTotal(finalTotal)
-                .createdAt(now)
-                // Datos de pago
-                .paymentMethod(checkoutDto.getPaymentMethod())
-                .paymentStatus("PENDING")
-                .paymentCountry(checkoutDto.getPaymentCountry())
-                // Datos de facturación
-                .billingName(checkoutDto.getBillingName())
-                .billingTaxId(checkoutDto.getBillingTaxId())
-                .billingStreet(checkoutDto.getBillingStreet())
-                .billingCity(checkoutDto.getBillingCity())
-                .billingPostalCode(checkoutDto.getBillingPostalCode())
-                .billingCountry(checkoutDto.getBillingCountry())
-                // Datos de envío
-                .shippingName(checkoutDto.getShippingName())
-                .shippingStreet(checkoutDto.getShippingStreet())
-                .shippingCity(checkoutDto.getShippingCity())
-                .shippingPostalCode(checkoutDto.getShippingPostalCode())
-                .shippingCountry(checkoutDto.getShippingCountry())
-                .build();
+        CustomerOrder order = new CustomerOrder();
+        order.setOrderNumber("TEMP");
+        order.setStatus("NEW");
+        order.setGrossTotal(grossTotal);
+        order.setDiscountTotal(discountTotal);
+        order.setFinalTotal(finalTotal);
+        order.setCreatedAt(now);
+        // Datos de pago
+        order.setPaymentMethod(checkoutDto.getPaymentMethod());
+        order.setPaymentStatus("PENDING");
+        order.setPaymentCountry(checkoutDto.getPaymentCountry());
+        // Datos de facturación
+        order.setBillingName(checkoutDto.getBillingName());
+        order.setBillingTaxId(checkoutDto.getBillingTaxId());
+        order.setBillingStreet(checkoutDto.getBillingStreet());
+        order.setBillingCity(checkoutDto.getBillingCity());
+        order.setBillingPostalCode(checkoutDto.getBillingPostalCode());
+        order.setBillingCountry(checkoutDto.getBillingCountry());
+        // Datos de envío
+        order.setShippingName(checkoutDto.getShippingName());
+        order.setShippingStreet(checkoutDto.getShippingStreet());
+        order.setShippingCity(checkoutDto.getShippingCity());
+        order.setShippingPostalCode(checkoutDto.getShippingPostalCode());
+        order.setShippingCountry(checkoutDto.getShippingCountry());
 
         // Guardar la orden en la base de datos para obtener el ID
         CustomerOrder savedOrder = orderService.create(order);

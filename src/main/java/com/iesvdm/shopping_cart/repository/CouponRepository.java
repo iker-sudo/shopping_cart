@@ -12,13 +12,14 @@ import org.springframework.stereotype.Repository;
 
 import com.iesvdm.shopping_cart.model.Coupon;
 
-import lombok.RequiredArgsConstructor;
-
 @Repository
-@RequiredArgsConstructor
 public class CouponRepository {
 
     private final JdbcTemplate jdbcTemplate;
+
+    public CouponRepository(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     /**
      * RowMapper personalizado para mapear correctamente las columnas de la BD

@@ -1,17 +1,8 @@
 package com.iesvdm.shopping_cart.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class Coupon {
     
     private Integer id;
@@ -33,5 +24,83 @@ public class Coupon {
     public enum DiscountType {
         PERCENT,
         FIXED_AMOUNT
+    }
+
+    public Coupon() {
+    }
+
+    public Coupon(Integer id, String code, String description, DiscountType discountType, BigDecimal discountValue, Boolean active, LocalDateTime validFrom, LocalDateTime validTo) {
+        this.id = id;
+        this.code = code;
+        this.description = description;
+        this.discountType = discountType;
+        this.discountValue = discountValue;
+        this.active = active;
+        this.validFrom = validFrom;
+        this.validTo = validTo;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public DiscountType getDiscountType() {
+        return discountType;
+    }
+
+    public void setDiscountType(DiscountType discountType) {
+        this.discountType = discountType;
+    }
+
+    public BigDecimal getDiscountValue() {
+        return discountValue;
+    }
+
+    public void setDiscountValue(BigDecimal discountValue) {
+        this.discountValue = discountValue;
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
+    }
+
+    public LocalDateTime getValidFrom() {
+        return validFrom;
+    }
+
+    public void setValidFrom(LocalDateTime validFrom) {
+        this.validFrom = validFrom;
+    }
+
+    public LocalDateTime getValidTo() {
+        return validTo;
+    }
+
+    public void setValidTo(LocalDateTime validTo) {
+        this.validTo = validTo;
     }
 }
