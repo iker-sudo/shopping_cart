@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finalizar Compra - Checkout</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .section-header {
+            background-color: #f8f9fa;
+            padding: 10px 15px;
+            border-left: 4px solid #0d6efd;
+            margin-bottom: 20px;
+        }
+        .summary-card {
+            position: sticky;
+            top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/products">Tienda Online</a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/products">Productos</a>
+                <a class="nav-link" href="/cart">Carrito</a>
+                <a class="nav-link" href="/cart/orders">Mis Pedidos</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5 mb-5">
+        <h1 class="mb-4">🛒 Finalizar Compra</h1>
+
+        <div class="row">
+            <!-- Formulario de datos -->
+            <div class="col-md-8">
+                <form th:action="@{/cart/checkout}" th:object="${checkoutDto}" method="post">
+
+                    <!-- Datos de Pago -->
+                    <div class="section-header">
+                        <h4 class="mb-0">💳 Datos de Pago</h4>
+                    </div>
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label for="paymentMethod" class="form-label">Método de Pago *</label>
+                            <select class="form-select" id="paymentMethod" th:field="*{paymentMethod}" required>
+                                <option value="">Seleccione...</option>
+                                <option value="CREDIT_CARD">Tarjeta de Crédito</option>
+                                <option value="DEBIT_CARD">Tarjeta de Débito</option>
+                                <option value="PAYPAL">PayPal</option>
+                                <option value="BANK_TRANSFER">Transferencia Bancaria</option>
+                                <option value="CASH_ON_DELIVERY">Contra Reembolso</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="paymentCountry" class="form-label">País de Pago *</label>
+                            <input type="text" class="form-control" id="paymentCountry"
+                                   th:field="*{paymentCountry}"
+                                   placeholder="España" required>
+                        </div>
+                    </div>
+
+                    <!-- Cupón de Descuento -->
+                    <div class="section-header">
+                        <h4 class="mb-0">🎟️ Cupón de Descuento</h4>
+                    </div>
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <label for="couponCode" class="form-label">Código de Cupón (Opcional)</label>
+                            <input type="text" class="form-control text-uppercase" id="couponCode"
+                                   th:field="*{couponCode}"
+                                   placeholder="Ej: WELCOME10"
+                                   style="text-transform: uppercase;">
+                            <small class="form-text text-muted">Introduce un código de descuento si tienes uno.</small>
+
+                            <!-- Mensaje de error de cupón -->
+                            <div th:if="${couponError}" class="alert alert-danger mt-2">
+                                <i class="bi bi-exclamation-triangle"></i> <span th:text="${couponError}"></span>
+                            </div>
+
+                            <!-- Lista de cupones disponibles -->
+                            <div th:if="${activeCoupons != null && !activeCoupons.isEmpty()}" class="mt-3">
+                                <div class="card">
+                                    <div class="card-header bg-light">
+                                        <small><strong>💡 Cupones disponibles:</strong></small>
+                                    </div>
+                                    <div class="card-body p-2">
+                                        <div class="row">
+                                            <div th:each="coupon : ${activeCoupons}" class="col-md-6 mb-2">
+                                                <div class="border rounded p-2 bg-light">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <div>
+                                                            <strong class="text-primary" th:text="${coupon.code}">CODE</strong>
+                                                            <br>
+                                                            <small th:text="${coupon.description}">Descripción</small>
+                                                        </div>
+                                                        <div class="text-end">
+                                                            <span class="badge bg-success"
+                                                                  th:if="${coupon.discountType.name() == 'PERCENT'}"
+                                                                  th:text="${coupon.discountValue + '%'}">10%</span>
+                                                            <span class="badge bg-success"
+                                                                  th:if="${coupon.discountType.name() == 'FIXED_AMOUNT'}"
+                                                                  th:text="'$' + ${coupon.discountValue}">$50</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Datos de Facturación -->
+                    <div class="section-header">
+                        <h4 class="mb-0">📄 Datos de Facturación</h4>
+                    </div>
+                    <div class="row mb-4">
+                        <div class="col-md-6 mb-3">
+                            <label for="billingName" class="form-label">Nombre Completo *</label>
+                            <input type="text" class="form-control" id="billingName"
+                                   th:field="*{billingName}"
+                                   placeholder="Juan Pérez García" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="billingTaxId" class="form-label">NIF/CIF/NIE</label>
+                            <input type="text" class="form-control" id="billingTaxId"
+                                   th:field="*{billingTaxId}"
+                                   placeholder="12345678A">
+                        </div>
+                        <div class="col-12 mb-3">
+                            <label for="billingStreet" class="form-label">Dirección *</label>
+                            <input type="text" class="form-control" id="billingStreet"
+                                   th:field="*{billingStreet}"
+                                   placeholder="Calle Principal, 123, 1º A" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="billingCity" class="form-label">Ciudad *</label>
+                            <input type="text" class="form-control" id="billingCity"
+                                   th:field="*{billingCity}"
+                                   placeholder="Madrid" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="billingPostalCode" class="form-label">Código Postal *</label>
+                            <input type="text" class="form-control" id="billingPostalCode"
+                                   th:field="*{billingPostalCode}"
+                                   placeholder="28001" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="billingCountry" class="form-label">País *</label>
+                            <input type="text" class="form-control" id="billingCountry"
+                                   th:field="*{billingCountry}"
+                                   placeholder="España" required>
+                        </div>
+                    </div>
+
+                    <!-- Datos de Envío -->
+                    <div class="section-header">
+                        <h4 class="mb-0">📦 Datos de Envío</h4>
+                    </div>
+
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="sameAsBilling"
+                               th:field="*{sameAsbilling}" onclick="toggleShippingFields()">
+                        <label class="form-check-label" for="sameAsBilling">
+                            Usar la misma dirección para envío
+                        </label>
+                    </div>
+
+                    <div id="shippingFields">
+                        <div class="row mb-4">
+                            <div class="col-12 mb-3">
+                                <label for="shippingName" class="form-label">Nombre Completo *</label>
+                                <input type="text" class="form-control" id="shippingName"
+                                       th:field="*{shippingName}"
+                                       placeholder="Juan Pérez García">
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label for="shippingStreet" class="form-label">Dirección *</label>
+                                <input type="text" class="form-control" id="shippingStreet"
+                                       th:field="*{shippingStreet}"
+                                       placeholder="Calle Principal, 123, 1º A">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="shippingCity" class="form-label">Ciudad *</label>
+                                <input type="text" class="form-control" id="shippingCity"
+                                       th:field="*{shippingCity}"
+                                       placeholder="Madrid">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="shippingPostalCode" class="form-label">Código Postal *</label>
+                                <input type="text" class="form-control" id="shippingPostalCode"
+                                       th:field="*{shippingPostalCode}"
+                                       placeholder="28001">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="shippingCountry" class="form-label">País *</label>
+                                <input type="text" class="form-control" id="shippingCountry"
+                                       th:field="*{shippingCountry}"
+                                       placeholder="España">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Botones -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="/cart" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> Volver al Carrito
+                        </a>
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="bi bi-check-circle"></i> Confirmar Pedido
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Resumen del Pedido -->
+            <div class="col-md-4">
+                <div class="card summary-card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">📋 Resumen del Pedido</h5>
+                    </div>
+                    <div class="card-body">
+                        <h6 class="mb-3">Productos:</h6>
+                        <div class="mb-3" style="max-height: 300px; overflow-y: auto;">
+                            <div th:each="item : ${cart}" class="mb-2 pb-2 border-bottom">
+                                <div class="d-flex justify-content-between">
+                                    <span th:text="${item.productName}">Producto</span>
+                                    <span class="text-muted" th:text="'x' + ${item.quantity}">x1</span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <small class="text-muted" th:text="'$' + ${item.unitPrice} + ' c/u'">$10.00 c/u</small>
+                                    <strong th:text="'$' + ${item.lineTotal}">$10.00</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Subtotal:</span>
+                            <strong th:text="'$' + ${grossTotal}">$0.00</strong>
+                        </div>
+
+                        <div class="d-flex justify-content-between mb-2 text-success"
+                             th:if="${discountTotal != null && discountTotal > 0}">
+                            <span>Descuento:</span>
+                            <strong th:text="'-$' + ${discountTotal}">-$0.00</strong>
+                        </div>
+
+                        <hr>
+
+                        <div class="d-flex justify-content-between">
+                            <h5>Total a Pagar:</h5>
+                            <h5 class="text-success" th:text="'$' + ${finalTotal}">$0.00</h5>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="alert alert-info mt-3">
+                    <small>
+                        <strong>ℹ️ Información:</strong><br>
+                        Los campos marcados con * son obligatorios.
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function toggleShippingFields() {
+            const checkbox = document.getElementById('sameAsBilling');
+            const shippingFields = document.getElementById('shippingFields');
+            const inputs = shippingFields.querySelectorAll('input');
+
+            if (checkbox.checked) {
+                shippingFields.style.display = 'none';
+                inputs.forEach(input => input.removeAttribute('required'));
+            } else {
+                shippingFields.style.display = 'block';
+                inputs.forEach(input => input.setAttribute('required', 'required'));
+            }
+        }
+
+        // Inicializar el estado al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            toggleShippingFields();
+        });
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+    <html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Mis Pedidos</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container">
+                <a class="navbar-brand" href="/products">Tienda Online</a>
+                <div class="navbar-nav ms-auto">
+                    <a class="nav-link" href="/products">Productos</a>
+                    <a class="nav-link" href="/cart">Carrito</a>
+                    <a class="nav-link active" href="/cart/orders">Mis Pedidos</a>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container mt-5">
+            <h1 class="mb-4">Mis Órdenes</h1>
+            
+            <div th:if="${orders.isEmpty()}">
+                <div class="alert alert-info">
+                    <h4 class="alert-heading">No hay pedidos registrados</h4>
+                    <p class="mb-0">Aún no has realizado ningún pedido. ¡Empieza a comprar ahora!</p>
+                </div>
+                <div class="text-center mt-4">
+                    <a href="/products" class="btn btn-primary btn-lg">
+                        <i class="bi bi-shop"></i> Ver Productos
+                    </a>
+                    <a href="/cart" class="btn btn-outline-secondary btn-lg ms-2">
+                        <i class="bi bi-cart"></i> Ir al Carrito
+                    </a>
+                </div>
+            </div>
+            
+            <div th:unless="${orders.isEmpty()}">
+                <div class="row">
+                    <div class="col-md-6 mb-3" th:each="order : ${orders}">
+                        <div class="card">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0">
+                                    <span th:text="${order.orderNumber}">ORD-20251211-0001</span>
+                                </h5>
+                                <small>Pedido #<span th:text="${order.id}"></span></small>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>📅 Fecha:</strong> <span th:text="${order.createdAt}"></span></p>
+                                <p><strong>💰 Total Bruto:</strong> $<span th:text="${order.grossTotal}"></span></p>
+                                <p th:if="${order.discountTotal != null && order.discountTotal > 0}">
+                                    <strong>🎟️ Descuento:</strong> -$<span th:text="${order.discountTotal}"></span>
+                                </p>
+                                <p><strong>💵 Total Final:</strong> <span class="h5 text-success">$<span th:text="${order.finalTotal}"></span></span></p>
+                                <p><strong>📦 Estado:</strong>
+                                    <span th:text="${order.status}" class="badge bg-success"></span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <a href="/products" class="btn btn-primary">Seguir Comprando</a>
+                <a href="/cart" class="btn btn-outline-secondary ms-2">Ver Carrito</a>
+            </div>
+        </div>
+        
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
+    </html>
